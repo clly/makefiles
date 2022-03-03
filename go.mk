@@ -37,10 +37,14 @@ test: lint ## run go tests
 
 .PHONY: build
 build: ## compile and build artifact
-	@for i in cmd/*; do \
-		echo "building $$i"; \
-		go build ./$$i; \
-	done
+	@if [[ -d cmd ]]; then \
+		for i in cmd/*; do \
+			echo "building $$i"; \
+			go build ./$$i; \
+		done \
+	else \
+		go build .; \
+	fi
 
 .PHONY: build/cmd
 build/cmd:
