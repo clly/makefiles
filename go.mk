@@ -1,5 +1,7 @@
 .PHONY: deps
 
+GOLANGCI_LINT_VERSION=1.45.2
+
 BINS=$(wildcard cmd/*)
 deps: ## download go modules
 	go mod download
@@ -16,15 +18,15 @@ fmt: lint/check ## ensure consistent code style
 .PHONY: lint/check
 lint/check:  lint/install
 	@if ! golangci-lint --version > /dev/null 2>&1; then \
-		echo -e "golangci-lint is not installed: run \`make lint-install\` or install it from https://golangci-lint.run"; \
+		echo -e "golangci-lint is not installed: run \`make lint/install\` or install it from https://golangci-lint.run"; \
 		exit 1; \
 	fi
 
 .PHONY: lint/install
 lint/install: ## installs golangci-lint to the go bin dir
-	@if ! golangci-lint --version > /dev/null 2>&1; then \
+	@if ! golangci-lint --version | egrep ".*$(GOLANGCI_LINT_VERSION).*" > /dev/null 2>&1; then \
 		echo "Installing golangci-lint"; \
-		curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(BIN_DIR) v1.30.0; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $$(go env GOPATH)/bin v$(GOLANGCI_LINT_VERSION); \
 	fi
 
 .PHONY: lint
